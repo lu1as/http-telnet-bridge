@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "sw5gAhGTp4wVQeZONjwMamxVUr0=",
+			"path": "github.com/Cristofori/kmud/telnet",
+			"revision": "9c029b6e62e2fbb54e8ca37750377147c01b3c2b",
+			"revisionTime": "2017-02-14T19:17:41Z"
+		},
+		{
+			"checksumSHA1": "l53Jm3mtlea/RzeydlryqPLeuL0=",
+			"path": "github.com/namsral/flag",
+			"revision": "67f268f20922975c067ed799e4be6bacf152208c",
+			"revisionTime": "2017-08-14T19:40:28Z"
+		}
+	],
+	"rootPath": "github.com/lu1as/http-tcp-bridge"
+}
