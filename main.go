@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/lu1as/http-tcp-bridge/bridge"
+	"github.com/lu1as/http-telnet-bridge/bridge"
 	"github.com/namsral/flag"
 )
 

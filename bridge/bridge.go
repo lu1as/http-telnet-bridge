@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -11,7 +12,7 @@ import (
 	"github.com/Cristofori/kmud/telnet"
 )
 
-const tcpTimeout = time.Second
+const tcpTimeout = 2 * time.Second
 
 type Bridge struct {
 	telnet     *telnet.Telnet
@@ -58,32 +59,33 @@ func (b *Bridge) handleJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pl, _ := ioutil.ReadAll(r.Body)
-	res, n, err := b.forward(pl)
-	if err != nil {
+	if err := b.forward(pl, w); err != nil {
 		log.Print(err.Error())
 		http.Error(w, JsonError("forwarding failed"), 500)
 		return
 	}
-
-	w.Write(res[:n])
 }
 
 func (b *Bridge) handlePing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "I am alive!")
 }
 
-func (b *Bridge) forward(payload []byte) (res []byte, n int, err error) {
+func (b *Bridge) forward(payload []byte, responseWriter io.Writer) error {
 	b.telnet.SetWriteDeadline(time.Now().Add(tcpTimeout))
 	if _, err := b.telnet.Write(append(payload, 0x22, 0x0a)); err != nil {
-		return nil, 0, err
+		return err
 	}
 
-	res = make([]byte, 4096)
-	b.telnet.SetReadDeadline(time.Now().Add(tcpTimeout))
-	n, err = b.telnet.Read(res)
-	if err != nil {
-		return nil, 0, err
+	r := make([]byte, 1024)
+	for {
+		b.telnet.SetReadDeadline(time.Now().Add(tcpTimeout))
+		n, _ := b.telnet.Read(r)
+
+		responseWriter.Write(r[:n])
+		if n < 1024 {
+			break
+		}
 	}
 
-	return res, n, nil
+	return nil
 }
